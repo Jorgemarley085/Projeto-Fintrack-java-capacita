@@ -4,10 +4,8 @@ import app.Main;
 import java.time.format.DateTimeFormatter;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Objects;
 import java.util.Scanner;
-import java.util.HashMap;
-import java.util.Map;
+import exception.EntradaInvalidaException;
 import model.TransacaoMensal;
 //Logica principal para gerenciar as transações
 public class FinTracker {
@@ -32,53 +30,70 @@ public class FinTracker {
                 2 - adicionar transação mensal
                 """);
 
-        int opcao = input2.nextInt();
-        input2.nextLine();
-
-        if(opcao==1){
-            System.out.println("insira o tipo (receita/despesa): ");
-            transacao.tipo = input2.nextLine();
-            System.out.println("insira o valor: ");
-            transacao.valor = input2.nextInt();
+        try {
+            int opcao = input2.nextInt();
             input2.nextLine();
-            System.out.println("insira a descrição");
-            transacao.descricao = input2.nextLine();
-            try {
+            if(opcao!=1 && opcao!=2){
+                throw new EntradaInvalidaException("INSIRA 1 OU 2");
+
+            }
+
+            if (opcao == 1) {
+                System.out.println("insira o tipo (receita/despesa): ");
+                transacao.tipo = input2.nextLine();
+                transacao.tipo=transacao.tipo.toLowerCase();
+                if(!transacao.tipo.equals("receita") && !transacao.tipo.equals("despesa")){
+                    throw new EntradaInvalidaException("insira somente Receita ou Despesa");
+                }
+
+                System.out.println("insira o valor: ");
+                transacao.valor = input2.nextDouble();
+                if (transacao.valor < 0) {
+                    throw new EntradaInvalidaException("valor nao pode ser negativo");
+                }
+                input2.nextLine();
+                System.out.println("insira a descrição");
+                transacao.descricao = input2.nextLine();
                 System.out.println("insira a data no formato dd/MM/yyyy");
                 DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy");
                 transacao.data = input2.nextLine();
-                transacao.date =LocalDate.parse(transacao.data,formato);
+                transacao.date = LocalDate.parse(transacao.data, formato);
 
-            }catch (Exception e){
-                System.out.println("data invalida");
+                transacoes.add(transacao);
+                System.out.println("Transação adicionada com sucesso!!");
 
-            }
-            transacoes.add(transacao);
-            System.out.println("Transação adicionada com sucesso!!");
-        } else if (opcao==2) {
 
-            TransacaoMensal transacaoMensal = new TransacaoMensal();
-            System.out.println("insira o tipo (receita/despesa): ");
-            transacaoMensal.tipo = input2.nextLine();
-            System.out.println("insira o valor: ");
-            transacaoMensal.valor = input2.nextInt();
-            input2.nextLine();
-            System.out.println("insira a descrição");
-            transacaoMensal.descricao = input2.nextLine();
-            try{
+            } else if (opcao == 2) {
+
+                TransacaoMensal transacaoMensal = new TransacaoMensal();
+                System.out.println("insira o tipo (receita/despesa): ");
+                transacaoMensal.tipo = input2.nextLine();
+                transacaoMensal.tipo=transacaoMensal.tipo.toLowerCase();
+                if(!transacaoMensal.tipo.equals("receita") && !transacaoMensal.tipo.equals("despesa")){
+                    throw new EntradaInvalidaException("insira somente Receita ou Despesa");
+                }
+                System.out.println("insira o valor: ");
+                transacaoMensal.valor = input2.nextDouble();
+                if (transacaoMensal.valor < 0) {
+                    throw new EntradaInvalidaException("valor nao pode ser negativo");
+                }
+                input2.nextLine();
+                System.out.println("insira a descrição");
+                transacaoMensal.descricao = input2.nextLine();
                 System.out.println("insira a data no formato dd/MM/yyyy");
                 DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-                transacaoMensal.data = input2.nextLine();
-                transacaoMensal.date =LocalDate.parse(transacaoMensal.data,formato);
+                transacaoMensal.diaFixo = input2.nextLine();
+                transacaoMensal.date = LocalDate.parse(transacaoMensal.diaFixo, formato);
 
-            }catch (Exception e){
 
+                transacoes.add(transacaoMensal);
+                System.out.println("Transação adicionada com sucesso!!");
             }
+        } catch(EntradaInvalidaException e){
+            System.out.println(e.getMessage());
 
-            transacoes.add(transacaoMensal);
-            System.out.println("Transação adicionada com sucesso!!");
-
-
+        }catch (Exception e){
+            System.out.println("DATA OU ENTRADA INVALIDA");
         }
 
     }
@@ -111,6 +126,9 @@ public class FinTracker {
         try {
             System.out.println("voce quer saldo da receita(1) ou saldo das despesas(2) ou ambos(3)");
             int opcao = input2.nextInt();
+            if (opcao >3 || opcao<1){
+                throw new EntradaInvalidaException("nao pode ser valor negativo ou maior 3");
+            }
             if (opcao==1){
                 System.out.println(somenteReceita());
             }else if(opcao==2){
@@ -121,7 +139,7 @@ public class FinTracker {
 
             }
 
-        }catch (Exception e){
+        }catch (EntradaInvalidaException e){
             System.out.println("Entrada invalida insira 1(receita) ou 2(despesas) ou 3(ambos)");
 
         }
@@ -137,6 +155,9 @@ public class FinTracker {
             System.out.println("insira o ID para remover a transação");
             boolean encontrou = false;
             int entrada = input2.nextInt();
+            if (entrada<0){
+                throw new EntradaInvalidaException("ID NAO PODE SER NEGATIVO");
+            }
             for(int i=0;i<transacoes.size();i++) {
                 Transacao t = transacoes.get(i);
                 if (entrada == t.id) {
@@ -145,12 +166,11 @@ public class FinTracker {
                     System.out.println("removido com sucesso");
                     break;
                 }
-                if (!encontrou) {
-                    System.out.println("ID NAO ENCONTRADO");
+            System.out.println("ID NAO ENCONTRADO");
 
-                }
+
             }
-        }catch (Exception e) {
+        }catch (EntradaInvalidaException e) {
 
             System.out.println("insira um numero inteiro do ID nao STRING");
 

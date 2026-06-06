@@ -1,6 +1,6 @@
 //Classe principal com o menu e execução
 package app;
-
+import exception.EntradaInvalidaException;
 import java.util.Scanner;
 import controller.FinTracker;
 public class Main {
@@ -10,7 +10,8 @@ public class Main {
 
         Scanner input = new Scanner(System.in);
         System.out.println("ola");
-        while (opcao!=5){
+        while (opcao != 5) {
+            try {
             System.out.println("""
                     ===== FINTRACK - SEU CONTROLE FINANCEIRO =====
                     1. Adicionar nova transação
@@ -19,37 +20,34 @@ public class Main {
                     4. Remover transação
                     5. Sair
                     """);
-            try {
-                System.out.println("escolha uma opção ");
-                opcao = input.nextInt();
-                switch (opcao){
-                    case  1:
-                        controller.adicionarTransacao();
-                        break;
-                    case 2:
-                        controller.mostrarTransacoes();
-                        break;
-                    case 3:
-                        controller.saldoAtual();
-                        break;
-                    case 4:
-                        controller.removerTransacao();
-                        break;
-                }
-                System.out.println("saiu");
-
-            }catch (Exception e){
-                System.out.println("insira 1 ou 2  ou 3 ou 4 ou 5!!");
+            System.out.println("escolha uma opção ");
+            opcao = input.nextInt();
+            if(opcao<0){
+                throw new EntradaInvalidaException("OPÇÂO NAO PODE NEGATIVA");
+            }
+            switch (opcao) {
+                case 1:
+                    controller.adicionarTransacao();
+                    break;
+                case 2:
+                    controller.mostrarTransacoes();
+                    break;
+                case 3:
+                    controller.saldoAtual();
+                    break;
+                case 4:
+                    controller.removerTransacao();
+                    break;
             }
 
-//            if (opcao==1){
-//                controller.adicionarTransacao();
-//            } else if (opcao==2) {
-//
-//            } else if (opcao==3) {
-//
-//            }else if(opcao==4){
-//            }
-        }
+            }catch(EntradaInvalidaException e){
+                System.out.println(e.getMessage());
+
+
+            }catch (Exception e) {
+                System.out.println("insira 1 ou 2  ou 3 ou 4 ou 5!!");
+                input.nextLine();
+            }
+    }
     }
 }

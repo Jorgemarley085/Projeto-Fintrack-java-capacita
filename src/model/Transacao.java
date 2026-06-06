@@ -1,7 +1,7 @@
 package model;
 
 import java.time.LocalDate;
-
+import utils.Formatador;
 //Classe base para qualquer tipo de transção
 public class Transacao {
     public String descricao;
@@ -18,10 +18,11 @@ public class Transacao {
     public String data;
     @Override
     public String toString() {
-        return "id: "+id+
-                "Tipo: " + tipo +
-                " Valor: " + valor +
-                " Descrição: " + descricao;
+        return " |id|: "+id+
+                " |Tipo|: " + tipo +
+                " |Valor|: " + Formatador.formatarMoeda(valor) +
+                " |Descrição|: " + descricao +
+                " |Data| : "+ date;
     }
 
 
